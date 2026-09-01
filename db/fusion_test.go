@@ -41,9 +41,6 @@ func TestOrphanSourceWALRecordIsNotCommitted(t *testing.T) {
 	if err := database.shards[1].wal.Append(orphan); err != nil {
 		t.Fatal(err)
 	}
-	if err := database.shards[1].wal.Sync(); err != nil {
-		t.Fatal(err)
-	}
 	if err := database.Close(); err != nil {
 		t.Fatal(err)
 	}

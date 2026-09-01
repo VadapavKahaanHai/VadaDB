@@ -51,12 +51,9 @@ func (w *WAL) Append(record WALRecord) error {
 	if err == nil && written != len(data) {
 		err = io.ErrShortWrite
 	}
-	return err
-}
-
-func (w *WAL) Sync() error {
-	w.mu.Lock()
-	defer w.mu.Unlock()
+	if err != nil {
+		return err
+	}
 	return w.file.Sync()
 }
 

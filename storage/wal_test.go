@@ -19,9 +19,6 @@ func TestWALAppendSyncReplay(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if err := w.Sync(); err != nil {
-		t.Fatal(err)
-	}
 	got, err := w.Replay()
 	if err != nil || !reflect.DeepEqual(got, want) {
 		t.Fatalf("replay = %v, %v", got, err)

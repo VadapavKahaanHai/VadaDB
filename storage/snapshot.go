@@ -35,7 +35,7 @@ func WriteSnapshot(path string, snapshot Snapshot) error {
 		binary.BigEndian.PutUint64(data[offset:offset+8], record.Key)
 		binary.BigEndian.PutUint64(data[offset+8:offset+16], record.Value)
 	}
-	return writeNewFile(path, data)
+	return writeFile(path, data, os.O_EXCL)
 }
 
 func LoadSnapshot(path string) (Snapshot, error) {
@@ -69,7 +69,7 @@ func WriteCheckpoint(path string, sequence uint64) error {
 	copy(data[:4], checkpointMagic[:])
 	binary.BigEndian.PutUint64(data[4:], sequence)
 	temporary := path + ".tmp"
-	if err := writeReplaceableFile(temporary, data); err != nil {
+	if err := writeFile(temporary, data, os.O_TRUNC); err != nil {
 		return err
 	}
 	if err := os.Rename(temporary, path); err == nil {
@@ -95,25 +95,11 @@ func LoadCheckpoint(path string) (uint64, bool, error) {
 	return binary.BigEndian.Uint64(data[4:]), true, nil
 }
 
-func writeNewFile(path string, data []byte) error {
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
-	if err != nil {
-		return err
-	}
-	if _, err = file.Write(data); err == nil {
-		err = file.Sync()
-	}
-	if closeErr := file.Close(); err == nil {
-		err = closeErr
-	}
-	return err
-}
-
-func writeReplaceableFile(path string, data []byte) error {
+func writeFile(path string, data []byte, mode int) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
 		return err
 	}
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0o600)
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|mode, 0o600)
 	if err != nil {
 		return err
 	}

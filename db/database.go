@@ -275,8 +275,6 @@ func (d *Database) Scan() ([]Record, error) {
 	return records, nil
 }
 
-func (d *Database) ShardCount() int { return len(d.shards) }
-
 func (d *Database) Shards() []ShardInfo {
 	d.mu.RLock()
 	defer d.mu.RUnlock()
@@ -293,12 +291,6 @@ func (d *Database) Shards() []ShardInfo {
 		}
 	}
 	return shards
-}
-
-func (d *Database) FusionSnapshot() [][]structures.FusedKVNode {
-	d.mu.RLock()
-	defer d.mu.RUnlock()
-	return d.fusion.Snapshot()
 }
 
 func (d *Database) StorageMetrics() StorageMetrics {
@@ -445,13 +437,10 @@ func (d *Database) commitWAL(shard *Shard, record storage.WALRecord) error {
 	if err := shard.wal.Append(record); err != nil {
 		return err
 	}
-	if err := shard.wal.Sync(); err != nil {
-		return err
-	}
 	if err := d.fusionWAL.Append(record); err != nil {
 		return err
 	}
-	return d.fusionWAL.Sync()
+	return nil
 }
 
 func (d *Database) bucketIndex(shard *Shard, key uint64) int {

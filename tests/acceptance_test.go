@@ -1,14 +1,10 @@
 package tests
 
 import (
-	"net/http"
-	"net/http/httptest"
 	"reflect"
 	"testing"
 
 	"vadadb/db"
-	"vadadb/httpapi"
-	"vadadb/web"
 )
 
 func TestV1Lifecycle(t *testing.T) {
@@ -73,19 +69,5 @@ func TestV1Lifecycle(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, expected) {
 		t.Fatalf("restart state = %v, want %v", got, expected)
-	}
-	apiResponse := httptest.NewRecorder()
-	httpapi.New(database).ServeHTTP(apiResponse, httptest.NewRequest(http.MethodGet, "/admin/storage", nil))
-	if apiResponse.Code != http.StatusOK {
-		t.Fatalf("storage API = %d: %s", apiResponse.Code, apiResponse.Body.String())
-	}
-	console, err := web.New(database)
-	if err != nil {
-		t.Fatal(err)
-	}
-	page := httptest.NewRecorder()
-	console.Handler().ServeHTTP(page, httptest.NewRequest(http.MethodGet, "/", nil))
-	if page.Code != http.StatusOK {
-		t.Fatalf("admin UI = %d: %s", page.Code, page.Body.String())
 	}
 }

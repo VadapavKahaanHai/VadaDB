@@ -10,12 +10,6 @@ type KVRecord struct {
 	Value uint64 `json:"value"`
 }
 
-type FusedKVNode struct {
-	Key      uint64 `json:"key_xor"`
-	Value    uint64 `json:"value_xor"`
-	BitField []bool `json:"bit_field"`
-}
-
 type kvNode struct {
 	key, value uint64
 	bits       []bool
@@ -164,25 +158,15 @@ func (f *FusedKVHashTable) Recover(missing int, survivors map[int][]KVRecord) ([
 	return recovered, nil
 }
 
-func (f *FusedKVHashTable) Snapshot() [][]FusedKVNode {
-	out := make([][]FusedKVNode, len(f.buckets))
-	for bucketIndex := range f.buckets {
-		for node := f.buckets[bucketIndex].head; node != nil; node = node.next {
-			out[bucketIndex] = append(out[bucketIndex], FusedKVNode{Key: node.key, Value: node.value, BitField: append([]bool(nil), node.bits...)})
-		}
-	}
-	return out
-}
-
 func (f *FusedKVHashTable) NodeCount() int {
 	total := 0
-	for _, bucket := range f.Snapshot() {
-		total += len(bucket)
+	for i := range f.buckets {
+		for node := f.buckets[i].head; node != nil; node = node.next {
+			total++
+		}
 	}
 	return total
 }
-
-func (f *FusedKVHashTable) BucketCount() int { return len(f.buckets) }
 
 func (f *FusedKVHashTable) SourceRecordCount() int {
 	total := 0
