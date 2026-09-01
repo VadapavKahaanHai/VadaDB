@@ -1,6 +1,6 @@
 # VadaDB
 
-VadaDB is small implementation of Fusible Data Structures. The original idea is taken from a paper - [Fusible Data Structures for Fault-Tolerance by Vijay] (https://users.ece.utexas.edu/~garg/dist/dcs07.pdf).
+VadaDB is small implementation of Fusible Data Structures. The original idea is taken from a paper - [Fusible Data Structures for Fault-Tolerance](https://users.ece.utexas.edu/~garg/dist/dcs07.pdf) by Vijay K. Garg and Vinit A. Ogale.
 
 VadaDB uses fused hash table as its fault-tolerance backup. It is Key-Value Database which uses 'uint64'. Three source shards mainain one-XOR fused backup which can reconstruct any failed source with less logical backup payload instead of full replica for sufficiently populated workloads
 
