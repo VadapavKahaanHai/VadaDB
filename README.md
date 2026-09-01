@@ -24,12 +24,12 @@ go build -o .\bin\vadadb.exe .\cmd\vadadb
 Commands which are supported by current implementation
 
 ```text
-PUT ;
-GET ;
-DELETE;
+PUT <Key> <Value> ;
+GET <Key>;
+DELETE <Key>;
 SCAN;
-CRASH SHARD 0;
-RECOVER SHARD 0;
+CRASH SHARD <Number>;
+RECOVER SHARD <Number>;
 SNAPSHOT;
 SHOW SHARDS;
 SHOW STORAGE;
